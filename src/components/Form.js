@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import * as yup from "yup";
-
 const formSchema = yup.object().shape({
   name: yup.string().required("Name is a required field."),
   email: yup
@@ -12,11 +11,9 @@ const formSchema = yup.object().shape({
   positions: yup.string(),
   motivation: yup.string().required("must include why you'd like to join")
 });
-
 export default function Form() {
   // state for whether our button should be disabled or not.
   const [buttonDisabled, setButtonDisabled] = useState(true);
-
   // managing state for our form inputs
   const [formState, setFormState] = useState({
     name: "",
@@ -25,7 +22,6 @@ export default function Form() {
     positions: "",
     motivation: ""
   });
-
   // state for our errors
   const [errors, setErrors] = useState({
     name: "",
@@ -34,16 +30,13 @@ export default function Form() {
     positions: "",
     motivation: ""
   });
-
   // new state to set our post request too. So we can console.log and see it.
   const [post, setPost] = useState([]);
-
   useEffect(() => {
     formSchema.isValid(formState).then(valid => {
       setButtonDisabled(!valid);
     });
   }, [formState]);
-
   const formSubmit = e => {
     e.preventDefault();
     axios
@@ -62,7 +55,6 @@ export default function Form() {
       })
       .catch(err => console.log(err.response));
   };
-
   const validateChange = e => {
     // Reach will allow us to "reach" into the schema and test only one part.
     yup
@@ -81,7 +73,6 @@ export default function Form() {
         });
       });
   };
-
   const inputChange = e => {
     e.persist();
     const newFormData = {
@@ -89,11 +80,9 @@ export default function Form() {
       [e.target.name]:
         e.target.type === "checkbox" ? e.target.checked : e.target.value
     };
-
     validateChange(e);
     setFormState(newFormData);
   };
-
   return (
     <form onSubmit={formSubmit}>
       <label htmlFor='name'>
@@ -115,12 +104,13 @@ export default function Form() {
           onChange={inputChange}
         />
         {errors.email.length > 0 ? (
-          <p className='error'>{errors.email}</p>
+          <p data-cy="email-error-msg" className='error'>{errors.email}</p>
         ) : null}
       </label>
       <label htmlFor='motivation'>
         Why would you like to help?
         <textarea
+          data-cy="motivation"
           name='motivation'
           value={formState.motivation}
           onChange={inputChange}
@@ -149,7 +139,7 @@ export default function Form() {
       </label>
       {/* displaying our post request data */}
       <pre>{JSON.stringify(post, null, 2)}</pre>
-      <button disabled={buttonDisabled}>Submit</button>
+      <button data-cy="submit-button" disabled={buttonDisabled}>Submit</button>
     </form>
   );
 }
